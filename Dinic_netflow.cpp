@@ -1,3 +1,11 @@
+/*
+Written by Hades on 12th, July, 2017
+This program is open-source and non-commercial
+Please leave this paragraph if you copy the code
+And give me the least amount of respect
+Thank you for your cooperation
+
+*/
 #include<stdio.h>
 #include<string.h>
 #include<math.h>
