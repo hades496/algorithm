@@ -33,13 +33,19 @@ Output Sample
 #include<algorithm>
 #include<iostream>
 #include<queue>
+#define LL long long
+#define mem(f) memset(f,0,sizeof(f))
 using namespace std;
+const int N=1005;
+const int M=100005;
+const LL INF=0x3f3f3f3f;
+
 
 class DancingLinkX
 {
 private:
     DancingLinkX *Up,*Down,*Left,*Right,*Col,*_Head;
-    int Row;
+    int Row,ColNum;
 
     void RemoveCol(DancingLinkX *C)
     {
@@ -51,6 +57,7 @@ private:
                 j->Down->Up=j->Up;
                 j->Up->Down=j->Down;
             }
+        C->ColNum--;
     }
     void ResumeCol(DancingLinkX *C)
     {
@@ -62,12 +69,14 @@ private:
                 j->Down->Up=j;
                 j->Up->Down=j;
             }
+        C->ColNum++;
     }
 
 public:
     DancingLinkX (int Cols)
     {
         _Head = Up = Down = Left = Right = Col = this;
+        ColNum = 0;
         if(Cols>0)
         {
             DancingLinkX *pre=_Head;
@@ -88,7 +97,6 @@ public:
 
         if (Value.empty()) return;
         DancingLinkX *FirstNode=NULL;
-        DancingLinkX *PreNode=FirstNode;
         DancingLinkX *HeadNode=_Head;
 
         for(int i=0;i<Value.size();i++)
@@ -96,6 +104,7 @@ public:
             HeadNode=HeadNode->Right;
             if(Value[i]==1)
             {
+                HeadNode->ColNum++;
                 DancingLinkX *Node=new DancingLinkX(0);
                 if(FirstNode)
                 {
@@ -115,21 +124,26 @@ public:
 
                 Node->Row=RowN;
                 Node->Col=HeadNode;
-                PreNode = Node;
             }
         }
     }
 
     vector<int> Dance()
     {
+        DancingLinkX *leastC=_Head->Right;
         DancingLinkX *C1=_Head->Right;
+        for(;C1!=_Head;C1=C1->Right)
+        {
+            if (leastC->ColNum>C1->ColNum)
+                leastC=C1;
+        }
+        C1=leastC;
+        vector <int> ans;
         if (C1==_Head)
         {
-            vector <int > res;
-            res.push_back(-1);
-            return res;
+            ans.push_back(-1);
+            return ans;
         }
-        vector <int> ans;
         ans.clear();
         RemoveCol(C1);
         for(DancingLinkX *i=C1->Down;i!=C1;i=i->Down)
@@ -188,6 +202,7 @@ void work()
 
 int main()
 {
+    //makedata();
     freopen("input.txt","r",stdin);
     //freopen("output.txt","w",stdout);
     int t;
