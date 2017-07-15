@@ -1,5 +1,5 @@
 /*
-Written by Hades on 14th, July, 2017
+Written by Hades on 15th, July, 2017
 This program is open-source and non-commercial
 Please leave this paragraph if you copy the code
 And give me the least amount of respect
