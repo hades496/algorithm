@@ -14,35 +14,36 @@
 typedef long long LL;
 using namespace std;
 const LL MOD = 1e9+7;
-int a[20],x,l,r,n;
+LL a[20],x,n;
+LL l,r;
 LL fact[20];
-P2 dp[20][200];
-P2 dfs(int pos,int sum,bool limit)
+P2 f[20][200][20];//前ｉ位，总和为ｊ，位数为ｄ的总数
+
+P2 dfs(int pos,int sum,bool limit,LL dig)
 {
-    if(pos==-1) return P2(sum==x,0);
-    if(!limit && dp[pos][sum+100].first!=-1) return dp[pos][sum+100];
-    int up=limit ? a[pos] : 9;
-    LL tmp=0,tot=0;
-    for(int i=0; i<=up; i++)
+    P2 tmp(0,0);
+    if (pos == -1) return P2(sum == x ,0);
+    if( !limit && f[pos][sum + 100][dig].first != -1) return f[pos][sum + 100][dig];
+    for(int i = 0; i <= (limit ? a[pos] : 9); i++)
     {
-        P2 te=dfs(pos-1,i-sum,limit && i==a[pos]);
-        tmp=(tmp+te.first)%MOD;
-        tot=(tot+te.first*i*fact[pos]+te.second)%MOD;
+        P2 te = dfs(pos-1, sum + i*(dig&1?-1:1), limit && i == a[pos],dig+(i!=0||dig!=0));
+        tmp.first=(tmp.first + te.first) % MOD;
+        tmp.second=(te.second + (tmp.second + te.first * (i * fact[pos]) % MOD) % MOD) % MOD;
     }
-    if(!limit) dp[pos][100+sum]=P2(tmp,tot);
-    return P2(tmp,tot);
+    if(!limit) f[pos][100 + sum][dig] = tmp;
+    return tmp;
 }
-int solve(int x)
+LL solve(LL x)
 {
-    int pos=0;
+    if(x<0) return 0;
+    int pos = 0;
     while(x)
     {
-        a[pos++]=x%10;
-        x/=10;
+        a[pos++] = x % 10;
+        x /= 10;
     }
-    n=pos;
-//    for(int i=0; i<n/2; i++) swap(a[i],a[n-i-1]);
-    return dfs(pos-1,0,true).second;
+    P2 tmp=dfs(pos - 1, 0, true,0);
+    return tmp.second;
 }
 
 void init()
@@ -53,9 +54,9 @@ void init()
 void work()
 {
     fact[0]=1;
-    for(int i=1;i<20;i++) fact[i]=(fact[i-1]*10)%MOD;
-    memset(dp,-1,sizeof dp);
-    cout << solve(r) -solve(l-1)<< endl;
+    for(int i = 1; i < 20; i++) fact[i]=(fact[i - 1] * 10) % MOD;
+    memset(f, -1, sizeof(f));
+    cout << (solve(r) - solve(l - 1) + MOD) % MOD << endl;
 }
 
 void prep()
@@ -71,8 +72,7 @@ int main()
     prep();
 //    scanf("%d\n",&t);
 //    while(t--)
-    //memset(dp,-1,sizeof dp);可优化
-    while(scanf("%d%d%d",&l,&r,&x)!=EOF)
+    while(cin >> l >> r >> x)
     {
         init();
         work();
