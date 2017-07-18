@@ -10,36 +10,27 @@
 #include<string>
 #include<stack>
 #define mem(f) memset(f,0,sizeof(f))
+#define P2 pair<LL,LL>
 typedef long long LL;
 using namespace std;
-const int N = 105;
+const LL MOD = 1e9+7;
 int a[20],x,l,r,n;
-int dp[20][200];
-vector <int> sta;
-int dfs(int pos,int sum,bool limit)
+LL fact[20];
+P2 dp[20][200];
+P2 dfs(int pos,int sum,bool limit)
 {
-    if(pos==-1)
-    {
-        if(sum==x)
-        {
-            for(int i=0;i<sta.size();i++)
-                cout << sta[i];
-            cout << endl;
-            return 1;
-        }
-        return sum==x;
-    }
-    //if(!limit && dp[pos][sum+100]!=-1) return dp[pos][sum+100];
+    if(pos==-1) return P2(sum==x,0);
+    if(!limit && dp[pos][sum+100].first!=-1) return dp[pos][sum+100];
     int up=limit ? a[pos] : 9;
-    int tmp=0;
-    for(int i=0;i<=up;i++)
+    LL tmp=0,tot=0;
+    for(int i=0; i<=up; i++)
     {
-        sta.push_back(i);
-        tmp+=dfs(pos-1,i-sum,limit && i==a[pos])*i*pow(10,pos);
-        sta.pop_back();
+        P2 te=dfs(pos-1,i-sum,limit && i==a[pos]);
+        tmp=(tmp+te.first)%MOD;
+        tot=(tot+te.first*i*fact[pos]+te.second)%MOD;
     }
-    if(!limit) dp[pos][100+sum]=tmp;
-    return tmp;
+    if(!limit) dp[pos][100+sum]=P2(tmp,tot);
+    return P2(tmp,tot);
 }
 int solve(int x)
 {
@@ -50,8 +41,8 @@ int solve(int x)
         x/=10;
     }
     n=pos;
-    for(int i=0;i<n/2;i++) swap(a[i],a[n-i-1]);
-    return dfs(pos-1,0,true);
+//    for(int i=0; i<n/2; i++) swap(a[i],a[n-i-1]);
+    return dfs(pos-1,0,true).second;
 }
 
 void init()
@@ -61,7 +52,10 @@ void init()
 
 void work()
 {
-
+    fact[0]=1;
+    for(int i=1;i<20;i++) fact[i]=(fact[i-1]*10)%MOD;
+    memset(dp,-1,sizeof dp);
+    cout << solve(r) -solve(l-1)<< endl;
 }
 
 void prep()
@@ -80,11 +74,8 @@ int main()
     //memset(dp,-1,sizeof dp);可优化
     while(scanf("%d%d%d",&l,&r,&x)!=EOF)
     {
-        memset(dp,-1,sizeof dp);
-        printf("%d\n",solve(r)-solve(l-1));
-        cout << solve(r) << endl;
-        memset(dp,-1,sizeof dp);
-        cout << ' ' <<solve(l-1)<< endl;
+        init();
+        work();
     }
     return 0;
 }
