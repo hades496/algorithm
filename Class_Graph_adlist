@@ -1,0 +1,129 @@
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<time.h>
+#include<algorithm>
+#include<iostream>
+#include<queue>
+#include<map>
+#include<string>
+#include<stack>
+#include<set>
+#define mem(f) memset(f,0,sizeof(f))
+#define P2 pair<LL,LL>
+typedef long long LL;
+using namespace std;
+const LL MOD = 1e9+7;
+const int N = 100005;
+int n,q;
+int father[N];
+class graph_adlist
+{
+private:
+    vector<int> edge,point,next,cont,cond;
+    vector<bool> has_trav;
+    int n,m,e;
+public:
+    graph_adlist(int n1,int m1)
+    {
+        n=n1;m=m1;
+        edge = vector<int>(n+1,0);
+        cond = vector<int>(n+1,0);
+        cont = vector<int>(m+1,0);
+        point = vector<int>(m+1,0);
+        next = vector<int>(m+1,0);
+        has_trav = vector<bool>(n,0);
+    }
+    void Link(int a,int b,int c = 0)
+    {
+        point[++e]=b; cont[e]=c; next[e]=edge[a]; edge[a]=e;
+    }
+    void Link2(int a,int b,int c = 0)
+    {
+        point[++e]=b; cont[e]=c; next[e]=edge[a]; edge[a]=e;
+        point[++e]=a; cont[e]=c; next[e]=edge[b]; edge[b]=e;
+    }
+    void read()
+    {
+        int u,v,i;
+        for(i=1;i<=n;i++)
+            scanf("%d",&cond[i]);
+        for(i=1;i<n;i++)
+        {
+            scanf("%d%d",&u,&v);
+            Link2(u,v);
+        }
+    }
+
+    void Traversal(int i)
+    {
+        int j,k;
+        has_trav[i]=1;
+        for(j=edge[i];j;j=next[j])
+        {
+            k=point[j];
+            //option begin
+            if(father[k]==0&&k!=1)
+                father[k]=i;
+            //option over
+            if(!has_trav[k])
+                Traversal(k);
+        }
+    }
+    void Solution()
+    {
+        int i,u,v,c;
+        read();
+        Traversal(1);
+        while(q--)
+        {
+            scanf("%d%d%d",&u,&v,&c);
+            int ans = 0;
+            while(u!=v)
+            {
+                if(cond[u]>c)
+                {
+                    ans++;
+                    c = cond[u];
+                }
+                u=father[u];
+            }
+            if(cond[u]>c) ans++;
+            printf("%d\n",ans);
+        }
+    }
+};
+
+void init()
+{
+
+}
+
+void work()
+{
+    graph_adlist g(n,2*(n-1));
+    g.Solution();
+}
+
+void prep()
+{
+
+}
+
+int main()
+{
+    freopen("input.txt","r",stdin);
+    //freopen("output.txt","w",stdout);
+    int t;
+    prep();
+    //scanf("%d\n",&t);
+    //while(t--)
+    while(cin >> n >> q)
+    {
+        //cin >> A >> B;
+        init();
+        work();
+    }
+    return 0;
+}
