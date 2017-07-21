@@ -1,3 +1,9 @@
+/*
+解N元模线性方程组：
+i = [1,n]
+{a_i * x_u + b_i * x_v = c_i
+*/
+
 #include<stdio.h>
 #include<string.h>
 #include<math.h>
