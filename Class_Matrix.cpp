@@ -36,14 +36,14 @@ int n,ans=50;
 string str;
 //vector<vector<int> > matrix;
 
-
+template <class T>
 class matrix
 {
 private:
     int Row,Col;
     const double EPS = 1e-6;
-    vector<vector<double> > data;
-    static int cmp(vector<double> a,vector<double> b)
+    vector<vector<T> > data;
+    static int cmp(vector<T> a,vector<T> b)
     {
         int i=0;
         while(a[i]==b[i]&&i<a.size()&&i<b.size())i++;
@@ -52,7 +52,7 @@ private:
     }
 public:
     matrix(){}
-    matrix(vector<vector<double> > mat)
+    matrix(vector<vector<T> > mat)
     {
         size_t i,j;
         Row=mat.size();
@@ -65,15 +65,15 @@ public:
             while(data[i].size()<Col)
                 data[i].push_back(0);
     }
-    matrix(double **a,size_t n,size_t m)
+    matrix(T **a,size_t n,size_t m)
     {
         size_t i,j;
         Row=n;Col=m;data.clear();
         for(i=0;i<n;i++)
         {
-            vector<double> temp; temp.clear();
+            vector<T> temp; temp.clear();
             for(j=0;j<m;j++)
-                temp.push_back(*((double*)a + n*i + j));
+                temp.push_back(*((T*)a + n*i + j));
             data.push_back(temp);
         }
     }
@@ -85,7 +85,7 @@ public:
         for(int i=0;i<m;i++) data.push_back(temp);
     }
 
-    vector<double> operator[](size_t i)
+    vector<T> operator[](size_t i)
     {
         return data[i];
     }
@@ -140,7 +140,7 @@ public:
         is >> mat.Row >> mat.Col;
         for(i=0;i<mat.Row;i++)
         {
-            vector<double> temp;
+            vector<T> temp;
             for(j=0;j<mat.Col;j++)
             {
                 is>>t;
@@ -152,7 +152,7 @@ public:
     }
     int rank()
     {
-        vector<vector<double> > mat(data);
+        vector<vector<T> > mat(data);
         int i,j,k,l,res=0;
         for(i=0;i<Row;i++)
         {
@@ -174,7 +174,7 @@ public:
 
 void init()
 {
-    matrix mat1;
+    matrix<double> mat1;
     cin>>mat1;
     cout<< mat1.rank();
 }
