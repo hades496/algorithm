@@ -79,7 +79,7 @@ public:
         int a = st[l][k], b = st[r-(1<<k)+1][k];
         return deep[a] < deep[b] ? a : b;
     }
-    int LCA(int i,int j)//最近公共祖先
+    int LCA(int i,int j)//最近公共祖先-ST算法
     {
         int x = first[i], y = first[j];
         if(x > y) swap(x,y);
