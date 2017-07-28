@@ -1,0 +1,96 @@
+#include<stdio.h>
+#include<string.h>
+#include<math.h>
+#include<stdlib.h>
+#include<time.h>
+#include<algorithm>
+#include<iostream>
+#include<queue>
+#include<map>
+#include<string>
+#include<stack>
+#include<set>
+#define mem(f) memset(f,0,sizeof(f))
+#define P2 pair<LL,LL>
+#include <bits/stdc++.h>
+typedef long long LL;
+using namespace std;
+const LL MOD = 1e9+7;
+const int N = 100005;
+const int MAXINT = 0x7fffffff;
+int n;
+LL d[3*N],lazy[3*N],a[N];
+LL updata(int i,int l,int r,int s,int t,LL x)
+{
+    if(l==s&&r==t){
+        lazy[i]=s==t?0:x;//打延迟标记
+        return d[i]=x*(t-s+1);
+    }
+    int m=(l+r)/2;
+    if(lazy[i])//延迟标记下放
+    {
+        updata(i<<1,l,m,l,m,lazy[i]);
+        updata(i<<1|1,m+1,r,m+1,r,lazy[i]);
+        lazy[i]=0;
+    }
+    if(t<=m) return d[i]=d[i<<1|1]+updata(i<<1,l,m,s,t,x);
+    if(s>m) return d[i]=d[i<<1]+updata(i<<1|1,m+1,r,s,t,x);
+    return d[i]=updata(i<<1,l,m,s,m,x)+updata(i<<1|1,m+1,r,m+1,t,x);
+}
+LL query(int i,int l,int r,int s, int t)
+{
+    if(l==s&&r==t)return lazy[i]?lazy[i]*(t-s+1):d[i];//有延迟标记则返回lazy[i]*节点数量，否则返回d[i]
+    int m=(l+r)/2;
+    if(lazy[i])//延迟标记下放
+    {
+        updata(i<<1,l,m,l,m,lazy[i]);
+        updata(i<<1|1,m+1,r,m+1,r,lazy[i]);
+        lazy[i]=0;
+    }
+    if(lazy[i]) lazy[i<<1]=lazy[i],lazy[i<<1|1]=lazy[i],lazy[i]=0;
+    if(t<=m) return query(i<<1,l,m,s,t);
+    if(s>m) return query(i<<1|1,m+1,r,s,t);
+    return query(i<<1,l,m,s,m)+query(i<<1|1,m+1,r,m+1,t);
+}
+int init()
+{
+    //for(register int i = 1; i <= 2*n; ++i) d[i]=MAXINT;
+    mem(d);mem(lazy);
+    for(register int i = 1; i <= n; ++i) scanf("%lld",&a[i]);
+    for(register int i = 1; i <= n; ++i) updata(1,1,n,i,i,a[i]);
+}
+
+int tri(int i,int l,int r)
+{
+    printf("i=%d,l=%d,r=%d,sum=%d,lazy=%d\n",i,l,r,d[i],lazy[i]);
+    if(l!=r)
+    {
+        int m = (l+r)>>1;
+        tri(i<<1,l,m);
+        tri(i<<1|1,m+1,r);
+    }
+}
+
+int work()
+{
+    int q,o,x,y;
+    for(cin>>q;q--;)
+    {
+        scanf("%d%d%d",&o,&x,&y);
+        if(o) scanf("%d",&o),updata(1,1,n,x,y,o);
+        else printf("%lld\n",query(1,1,n,x,y));
+        //printf("option:%d,x=%d,y=%d\n",o>0,x,y);
+        //tri(1,1,n);
+    }
+}
+
+int main()
+{
+    freopen("input.txt","r",stdin);
+    while(cin >> n)
+    {
+        init();
+        work();
+    }
+    return 0;
+}
