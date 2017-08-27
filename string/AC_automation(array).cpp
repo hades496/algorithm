@@ -16,13 +16,13 @@
 typedef long long LL;
 using namespace std;
 const LL MOD = 1e9+7;
-const int N = 1000005;
+const int N = 10005 * 50;
 const int M = 1000005;
 const LL INF=0x3f3f3f3f;
 
 int tot,n;
 int father[N],flag[N],now[N],fail[N],nextc[N][26];
-char str[N];
+char str[M];
 
 inline LL read()
 {
@@ -52,23 +52,19 @@ void insert(char *s)
 void getfail(int t)
 {
     for(t=1;t<=tot;++t)
-    {
         if (father[t])
         {
             int f = fail[father[t]];
             while (nextc[f][now[t]]==0&&f) f = fail[f];
             fail[t] = nextc[f][now[t]];
         }
-        else
-            fail[t]=0;
-    }
 }
 
 void init()
 {
     int i;
     n = read();
-    tot=0; mem(nextc);mem(flag);
+    tot=0; mem(nextc);mem(flag);mem(fail);
     for(i=1;i<=n;++i)
     {
         scanf("%s",str);
@@ -87,7 +83,7 @@ void work(char *qstr)
         while(t&&nextc[t][index]==0) t = fail[t];
         t = nextc[t][index];
         int temp = t;
-        while(temp)
+        while(temp&&flag[temp])
         {
             ans+= flag[temp];
             flag[temp]=0;
