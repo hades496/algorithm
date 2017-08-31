@@ -45,8 +45,8 @@ struct Splay
     void Path(node*rt)
     {
         if(rt==NULL) return;
+        printf("x=%d l=%d r=%d\n",rt->key,rt->ch[0]?rt->ch[0]->key:-1,rt->ch[1]?rt->ch[1]->key:-1);
         Path(rt->ch[0]);
-        printf("%d ",rt->key);
         Path(rt->ch[1]);
     }
     void splay(node*x, node*y)
@@ -54,12 +54,13 @@ struct Splay
         while(x->father != y)
         {
             node*p = x->father;
-            if (p->father == y) lrr(x,lr(p,x));
-            else
+            if (p->father == y) lrr(x,lr(p,x)^1);
+            else//zig-zig or zag
             {
-                node* g = p->father;//zig-zig or zag
-                lrr(lr(p,x)^lr(g,p)?x:p,lr(p,x)^1);
-                lrr(x,lr(g,p)^1);
+                node* g = p->father;
+                node* t = lr(p,x)^lr(g,p)?x:p;
+                lrr(t,lr(t->father,t)^1);
+                lrr(x,lr(x->father,x)^1);
             }
         }
     }
@@ -80,8 +81,16 @@ struct Splay
     {
         node *rt=BST_insert(root,x,NULL,0);
         splay(rt,NULL);
-        Path(root);
-        printf("\n");
+        return rt;
+    }
+    node* find(int x)
+    {
+        node* rt=root;
+        while(rt)
+        {
+            if(rt->key==x) return rt;
+            else rt=rt->ch[x>rt->key];
+        }
         return rt;
     }
     node* near(node* a,int lrf) //lrf = 0 means prev node,1 means next node
@@ -92,8 +101,12 @@ struct Splay
     }
     void erase(int a,int b)
     {
-        node*ra=insert(a),*rb=insert(b);
-        ra = near(ra,0); rb= near(rb,1);
+        node*ra=find(a);
+        node*rb=find(b);
+        if(ra==NULL) ra=insert(a);
+        if(rb==NULL) rb=insert(b);
+        splay(ra,NULL); ra = near(ra,0);
+        splay(rb,NULL); rb = near(rb,1);
         splay(ra,NULL); splay(rb,ra);
         rb->ch[0]=NULL;
     }
