@@ -34,9 +34,8 @@ struct node
 
 struct Treap
 {
-    node *T[N],*root;
-    int tot;
-    Treap(){tot=0;mem(T);}
+    node *root;
+    Treap(){root = NULL;}
     inline bool lr(node* f,node* s){return f->ch[1]==s;}
     inline void lrr(node *a,int lrl)
     {
@@ -49,10 +48,10 @@ struct Treap
     {
         if(rt==NULL)
         {
-            T[tot] = new node(x,fa);
-            if (tot==0) root=T[0];
-            if(fa) fa->ch[lr] = T[tot];
-            return T[tot++];
+            rt = new node(x,fa);
+            if (root==NULL) root=rt;
+            if(fa) fa->ch[lr] = rt;
+            return rt;
         }
         else
             return insert(rt->ch[x > rt->key], x, rt, x > rt->key);
