@@ -31,51 +31,51 @@ struct Splay
 {
     node *root;
     Splay(){root = NULL;insert(-INF);insert(INF);}
-    inline bool lr(node* s){return s->father->ch[1]==s;} //true means s is right-child
+    inline bool isRight(node* s){return s->father->ch[1]==s;} //true means s is right-child
     inline int updata(node* rt){
         int res = 1;
         if(rt->ch[0]) res+=rt->ch[0]->size;
         if(rt->ch[1]) res+=rt->ch[1]->size;
         return rt->size = res;
     }
-    inline void lrr(node *b)
+    inline void rotate(node *b)
     {
-        int ore = lr(b); //ore==1 means left rotation ,0 means right rotation
-        node *a = b->father,*f = a->father,*d = b->ch[ore^1];
-        b->father = f; if(f) f->ch[lr(a)] = b; else root = b;
-        a->ch[ore] = d; if(d) d->father = a;
-        b->ch[ore^1] = a; a->father = b;
-        updata(a); updata(b);
+        int dir = isRight(b)^1; //dir==0 means left rotation ,1 means right rotation
+        node *a = b->father,*f = a->father,*d = b->ch[dir];
+        b->father = f; if(f) f->ch[isRight(a)] = b; else root = b;
+        a->ch[dir^1] = d; if(d) d->father = a;
+        b->ch[dir] = a; a->father = b;
+        updata(a); updata(b);//维护节点数， 注意先儿子后父亲
     }
     void splay(node*x, node*y)
     {
         while(x->father != y)
         {
-            lrr(x);
-//            node*p = x->father;
-//            if (p->father == y) lrr(x);
-//            else
-//            {
-//                lrr(lr(x)^lr(p)?x:p);
-//                lrr(x);
-//            }
+            node*p = x->father;
+            if (p->father == y) rotate(x);
+            else
+            {
+                node* g = p->father,*t = isRight(x)^isRight(p)?x:p;
+                rotate(t);
+                rotate(x);
+            }
         }
     }
-    node* BST_insert(node*rt,int x,node* fa,bool lr)
+    node* BST_insert(node*rt,int x,node* fa,bool isRight)
     {
         if(rt==NULL)
         {
             rt = new node(x,fa);
             if (root==NULL) root=rt;
-            if(fa) fa->ch[lr] = rt;
+            if(fa) fa->ch[isRight] = rt;
             splay(rt,NULL);
             return rt;
         }
         else
-            if(rt->key == x) return rt;
+            if(rt->key == x) return rt;//不重复计数
             else return BST_insert(rt->ch[x > rt->key], x, rt,x > rt->key);
     }
-    node* insert(int x)
+    inline node* insert(int x)
     {
         node *rt=BST_insert(root,x,NULL,0);
         splay(rt,NULL);
@@ -97,23 +97,18 @@ struct Splay
     }
     int rank(int x)//x-th min
     {
-        node *rt = root;
-        x++;
+        node *rt = root;x++;
         while(rt)
         {
             int rak=rt->ch[0]?rt->ch[0]->size+1:1;
             if (rak==x) return rt->key;
-            if (rak<x)
+            if (x<rak) rt = rt->ch[0];
+            else
             {
                 x -= rak;
                 rt = rt->ch[1];
             }
-            else
-            {
-                rt = rt->ch[0];
-            }
         }
-        return 0;
     }
     int query(int x)
     {
@@ -143,12 +138,8 @@ void work()
     {
         scanf("\n%c %d",&c,&x);
         if(c=='I') splay->insert(x);
-        else if(c=='Q')printf("%d\n",splay->query(x));
-        else
-        {
-            scanf("%d",&y);
-            splay->erase(x,y);
-        }
+        else printf("%d\n",splay->rank(x));
+
     }
 }
 
