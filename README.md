@@ -1,2 +1,2 @@
 # algorithm
-Difficult algorithm template
+Some algorithm template
